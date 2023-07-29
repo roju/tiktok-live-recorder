@@ -51,19 +51,9 @@ class Error(Enum):
 
 
 class Info(Enum):
-    """
-    Enumeration that defines the version number and the banner message.
-    """
+    """Enumeration that defines the version number and the banner message."""
     def __str__(self):
         return str(self.value)
 
-    VERSION = 3.9
-    BANNER = f"""
-
-  _____ _ _   _____    _     _    _           ___                   _         
- |_   _(_) |_|_   _|__| |__ | |  (_)_ _____  | _ \___ __ ___ _ _ __| |___ _ _ 
-   | | | | / / | |/ _ \ / / | |__| \ V / -_) |   / -_) _/ _ \ '_/ _` / -_) '_|
-   |_| |_|_\_\ |_|\___/_\_\ |____|_|\_/\___| |_|_\___\__\___/_| \__,_\___|_| 
-
-   V{VERSION}
-"""
+    VERSION = 4.0
+    BANNER = f'Tiktok Live Recorder v{VERSION}'
