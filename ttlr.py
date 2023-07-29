@@ -1,5 +1,11 @@
 import logging
 import logging.handlers
+    parser.add_argument('-proxy',
+                        nargs='?',
+                        default=None,
+                        const='socks5://127.0.0.1:9050',
+                        help='Route repetitive requests through a proxy server',
+                        action='store')
     parser.add_argument('-store_logs',
                         nargs='?',
                         default=None,
@@ -22,3 +28,4 @@ def config_logging(logs_dir=None):
         handlers.append(file_handler)
     logging.basicConfig(level=logging.INFO, handlers=handlers)
         config_logging(args.store_logs)
+            proxy=args.proxy,

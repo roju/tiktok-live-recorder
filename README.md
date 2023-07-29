@@ -26,13 +26,18 @@ $ pip install -r requirements.txt
 # Run the app
 $ python main.py -h
 ```
+### Proxy Server
+
+In automatic mode, we make many repeated requests at a fixed interval. TikTok may at some point in the future decide to flag such requests as bot activity and blacklist your IP (this assumption is purely speculative at this point). Also, you may be able to bypass restrictions in certain countries (untested). The proxy is only used for certian requests, not for downloading the video data.
+
+Use the -proxy argument to specify a proxy server. Defaults to tor proxy which requires tor to be installed and confirured on your system.
 
 ## To-Do List
 - [x] Log console output to file
 - [x] Automatic Recording
 - [x] Recording by room_id
-- [ ] Recoding by tiktok live url
-- [ ] Using proxy to bypass login restriction in some country. (only to get the room_id)
+- [x] Using proxy to avoid bot detection
+- [x] Using proxy to bypass login restriction in some country. (only to get the room_id)
 - [ ] Improve the graphical user interface
 - [ ] Add feature to send recorded live streams to Telegram via Telegram bot
 
