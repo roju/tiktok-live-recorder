@@ -1,3 +1,12 @@
+import time
+import logging
+import requests as req
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Referer': 'https://www.tiktok.com/',
+}
+
 def lag_error(err_str) -> bool:
     """Check if ffmpeg output indicates that the stream is lagging"""
     lag_errors = [
@@ -6,6 +15,16 @@ def lag_error(err_str) -> bool:
         'Error in the pull function'
     ]
     return any(err in err_str for err in lag_errors)
+
+def retry_wait(seconds=60, print_msg=True):
+    """Sleep for the specified number of seconds"""
+    if print_msg:
+        if seconds < 60:
+            logging.info(f'Waiting {seconds} seconds')
+        else:
+            logging.info(f"Waiting {'%g' % (seconds/60)} minute{'s' if seconds > 60 else ''}")
+    time.sleep(seconds)
+
 def check_exists(exp, value):
     """Check if a nested json key exists"""
     # For the case that we have an empty element
