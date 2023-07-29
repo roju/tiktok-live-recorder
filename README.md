@@ -28,6 +28,7 @@ $ python main.py -h
 ```
 
 ## To-Do List
+- [x] Log console output to file
 - [x] Automatic Recording
 - [x] Recording by room_id
 - [ ] Recoding by tiktok live url
