@@ -153,7 +153,10 @@ from browser import BrowserExtractor
             raise errors.GenericReq(ex)
             if response.status_code == StatusCode.REDIRECT:
                 raise errors.Blacklisted('Redirect')
+            match = re.search(r'room_id=(\d+)', response.text)
             if not match: raise ValueError('room_id not found')
+            return match.group(1)
+        
         except (req.HTTPError, errors.Blacklisted) as e:
             raise errors.Blacklisted(e)
         except AttributeError as e:
