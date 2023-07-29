@@ -1,30 +1,26 @@
 <div align="center">
 
-# TikTok Live Recorder🎥
+# TikTok Live Recorder 🎥
 
-TikTok Live Recorder is a simple **tiktok live streaming recorder**.
+A CLI tool for recording TikTok live streams
 
-<img src="/assets/sample.png" width="650px">
 </div>
-
-<!--
-## Requirements
-<a href="https://streamlink.github.io/install.html">Install StreamLink</a>
--->
 
 ## How To Use
   
 To clone and run this application, you'll need [Git](https://git-scm.com) and [Python3](https://www.python.org/downloads/) installed on your computer. From your command line:
 
+1. Clone this repository
 ```bash
-# Clone this repository
-$ git clone https://github.com/Michele0303/TikTok-Live-Recorder
-# Go into the repository
-$ cd TikTok-Live-Recorder
-# Install dependencies
-$ pip install -r requirements.txt
-# Run the app
-$ python main.py -h
+git clone https://github.com/roju/tiktok-live-recorder && cd tiktok-live-recorder
+```
+2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+3. Run the app
+```bash
+python ttlr.py -h
 ```
 
 ### Recording Private Streams
@@ -50,7 +46,7 @@ Use the -proxy argument to specify a proxy server. Defaults to tor proxy which r
 - [x] Recording by room_id
 - [x] Using proxy to avoid bot detection
 - [x] Using proxy to bypass login restriction in some country. (only to get the room_id)
-- [ ] Improve the graphical user interface
+- [ ] Recording by tiktok live url
 - [ ] Add feature to send recorded live streams to Telegram via Telegram bot
 
 ## Legal
