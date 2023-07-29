@@ -10,6 +10,20 @@ from browser import BrowserExtractor
                 elif self.status == LiveStatus.LAGGING:
                     live_url = self.get_live_url()
                     self.start_recording(live_url)
+            except (errors.GenericReq, ValueError, req.HTTPError, 
+                    errors.BrowserExtractor, errors.ConnectionClosed, 
+                    errors.UserNotFound) as e:
+                if self.mode == Mode.MANUAL: raise e
+                else: 
+                    logging.error(e)
+                    self.room_id = None
+                    bot_utils.retry_wait(WaitTime.SHORT)
+            except errors.Blacklisted as e:
+                if Mode == Mode.AUTOMATIC:
+                    logging.error(ErrorMsg.BLKLSTD_AUTO_MODE_ERROR)
+                else:
+                    logging.error(ErrorMsg.BLKLSTD_ERROR)
+                raise e
         if self.status is not LiveStatus.LAGGING:
             logging.info(f"Output directory: {self.out_dir}")
                             self.status = LiveStatus.LIVE
@@ -67,6 +81,12 @@ from browser import BrowserExtractor
             live_status_code = json['LiveRoomInfo']['status']
             if live_status_code != 4: return (LiveStatus.LAGGING 
                 if self.status == LiveStatus.LAGGING else LiveStatus.LIVE)
+            
+        except ConnectionAbortedError:
+            raise errors.ConnectionClosed(ErrorMsg.CONNECTION_CLOSED)
+        except ValueError as e: raise e
+        except Exception as ex:
+            raise errors.GenericReq(ex)
             if self.status is not LiveStatus.LAGGING:
                 logging.info(f'Getting live url for room ID {self.room_id}')
             json = self.req.get(url, headers=bot_utils.headers).json()
@@ -81,10 +101,29 @@ from browser import BrowserExtractor
             if not bot_utils.check_exists(json, ['data', 'stream_url', 'rtmp_pull_url']):
                 raise ValueError(f'rtmp_pull_url not in response: {json}')
             return json['data']['stream_url']['rtmp_pull_url']
+        except ValueError as e: raise e
+        except errors.AccountPrivate as e: raise e
         except errors.BrowserExtractor as e: raise e
+        except Exception as ex:
+            raise errors.GenericReq(ex)
+            if response.status_code == StatusCode.REDIRECT:
+                raise errors.Blacklisted('Redirect')
+            if not match: raise ValueError('room_id not found')
+        except (req.HTTPError, errors.Blacklisted) as e:
+            raise errors.Blacklisted(e)
+        except AttributeError as e:
+            raise errors.UserNotFound(f'{ErrorMsg.USERNAME_ERROR}\n{e}')
+        except ValueError as e: raise e
+        except Exception as ex:
+            raise errors.GenericReq(ex)
             json = req.get(url, headers=bot_utils.headers).json()
             if not bot_utils.check_exists(json, ['LiveRoomInfo', 'ownerInfo', 'uniqueId']):
                 logging.error(f'LiveRoomInfo.uniqueId not found in json: {json}')
                 raise errors.UserNotFound(ErrorMsg.USERNAME_ERROR)
             return json['LiveRoomInfo']['ownerInfo']['uniqueId']
             
+        except ConnectionAbortedError:
+            raise errors.ConnectionClosed(ErrorMsg.CONNECTION_CLOSED)
+        except errors.UserNotFound as e: raise e
+        except Exception as ex:
+            raise errors.GenericReq(ex)
