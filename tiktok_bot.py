@@ -26,10 +26,16 @@ from browser import BrowserExtractor
                 raise e
         if self.status is not LiveStatus.LAGGING:
             logging.info(f"Output directory: {self.out_dir}")
+            if self.use_ffmpeg:
+                self.handle_recording_ffmpeg(live_url)
+                if self.duration is not None: should_exit = True
                             self.status = LiveStatus.LIVE
                 if not should_exit: raise errors.StreamLagging
         except errors.StreamLagging:
             logging.info('Stream lagging')
+        except errors.FFmpeg as e:
+            logging.error('FFmpeg error:')
+            logging.error(e)
         self.status = LiveStatus.LAGGING
 
         try:
@@ -40,13 +46,52 @@ from browser import BrowserExtractor
                 self.video_list.append(self.out_file)
         except FileNotFoundError: pass
         except Exception as e: logging.error(e)
+
+        if should_exit:
+            self.finish_recording()
+            sys.exit(0)
+
+    """
+ ██   ██  █████  ███    ██ ██████  ██      ███████     ██████  ███████  ██████ 
+ ██   ██ ██   ██ ████   ██ ██   ██ ██      ██          ██   ██ ██      ██      
+ ███████ ███████ ██ ██  ██ ██   ██ ██      █████       ██████  █████   ██      
+ ██   ██ ██   ██ ██  ██ ██ ██   ██ ██      ██          ██   ██ ██      ██      
+ ██   ██ ██   ██ ██   ████ ██████  ███████ ███████     ██   ██ ███████  ██████ 
+    """
+
+    def handle_recording_ffmpeg(self, live_url):
+        """Show real-time stats and raise ffmpeg errors"""
+        stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, stats=None)
+        if self.duration is not None:
+            stream = ffmpeg.output(stream, self.out_file, c='copy', t=self.duration)
+        else:
+            stream = ffmpeg.output(stream, self.out_file, c='copy')
+        try:
+            proc = ffmpeg.run_async(stream, pipe_stderr=True)
+            ffmpeg_err = ''
+            stats_shown = False
+            text_stream = io.TextIOWrapper(proc.stderr, encoding="utf-8")
+            while True:
+                if proc.poll() is not None: break
+                for line in text_stream:
+                    if 'frame=' in line:
+                        if not stats_shown:
+                            logging.info(f"Started recording{f' for {self.duration} seconds' if self.duration else ''}")
+                            print("Press 'q' to re-start recording, CTRL + C to stop")
                             self.status = LiveStatus.LIVE
+                        print(line.strip(), end='\r')
+                        stats_shown = True
                     else:
                         # logging.error(line.strip())
                         ffmpeg_err = ffmpeg_err + ''.join(line)
             if ffmpeg_err: 
                 if bot_utils.lag_error(ffmpeg_err): raise errors.StreamLagging
                 else: raise errors.FFmpeg(ffmpeg_err.strip())
+        except KeyboardInterrupt as i: raise i
+        except ValueError as e: logging.error(e)
+        finally: 
+            if stats_shown: print()
+
     """
  ███████ ██ ███    ██ ██ ███████ ██   ██     ██████  ███████  ██████ 
  ██      ██ ████   ██ ██ ██      ██   ██     ██   ██ ██      ██      
