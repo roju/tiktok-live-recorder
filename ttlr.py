@@ -6,6 +6,12 @@ import logging.handlers
                         const='socks5://127.0.0.1:9050',
                         help='Route repetitive requests through a proxy server',
                         action='store')
+    parser.add_argument('-browser_exec',
+                        nargs='?',
+                        default=None,
+                        const='/usr/bin/google-chrome-stable',
+                        help='Path to browser executable for recording private streams',
+                        action='store')
     parser.add_argument('-store_logs',
                         nargs='?',
                         default=None,
@@ -29,3 +35,4 @@ def config_logging(logs_dir=None):
     logging.basicConfig(level=logging.INFO, handlers=handlers)
         config_logging(args.store_logs)
             proxy=args.proxy,
+            browser_exec=args.browser_exec,

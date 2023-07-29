@@ -26,6 +26,16 @@ $ pip install -r requirements.txt
 # Run the app
 $ python main.py -h
 ```
+
+### Recording Private Streams
+  
+Recording private streams is supported via web browser with a helper extension installed. This is an experimental feature.
+
+1. Install Google Chrome or other browser supported by the extension
+2. Install the extension from the browser-extension folder
+3. In the browser, log in to your TikTok account which has permission to view the private stream
+4. Run ttlr.py using the browser_exec argument, specifying the path to your browser executable
+
 ### Proxy Server
 
 In automatic mode, we make many repeated requests at a fixed interval. TikTok may at some point in the future decide to flag such requests as bot activity and blacklist your IP (this assumption is purely speculative at this point). Also, you may be able to bypass restrictions in certain countries (untested). The proxy is only used for certian requests, not for downloading the video data.
@@ -33,6 +43,7 @@ In automatic mode, we make many repeated requests at a fixed interval. TikTok ma
 Use the -proxy argument to specify a proxy server. Defaults to tor proxy which requires tor to be installed and confirured on your system.
 
 ## To-Do List
+- [x] Record private live streams with browser extension
 - [x] Log console output to file
 - [x] Automatic Recording
 - [x] Recording by room_id

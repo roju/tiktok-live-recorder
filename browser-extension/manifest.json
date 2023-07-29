@@ -1,0 +1,21 @@
+{
+    "name": "TikTok Live Recorder Helper",
+    "version": "1",
+    "description": "Helper extension for tiktok-live-recorder, for recording private streams",
+    "content_scripts": [
+        {
+            "matches": ["https://webcast.tiktok.com/webcast/room/info/?aid=1988&room_id=*"],
+            "js": ["content.js"]
+        }
+    ],
+    "background": {
+        "service_worker": "worker.js"
+    },
+    "permissions": [
+        "tabs"
+    ],
+    "host_permissions": [
+        "*://localhost:*/*"
+    ],
+    "manifest_version": 3
+}
