@@ -1,5 +1,39 @@
+import argparse
 import logging
 import logging.handlers
+import datetime
+import sys
+import os
+import traceback
+from enums import Mode, Info
+from tiktok_bot import TikTok
+
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-user',
+                        help='Record a live from the username',
+                        action='store')
+    parser.add_argument('-room_id',
+                        help='Record a live from the room_id',
+                        action='store')
+    parser.add_argument('-mode',
+                        default='manual',
+                        help='Recording mode: (manual,auto) [Default: manual]\n[manual] => manual live recording\n[auto] => automatic live recording when the user is in live',
+                        action='store')
+    parser.add_argument('-out_dir',
+                        help='Output directory where video files will be stored',
+                        default=os.path.dirname(os.path.abspath(__file__)),
+                        action='store')
+    parser.add_argument('-ffmpeg',
+                        help='Record via FFmpeg; allows real-time conversion to mp4 and video file concatenation',
+                        action='store_true')
+    parser.add_argument('-duration',
+                        help='Stop recording the live after this number of seconds [Default: None]',
+                        type=int,
+                        default=None,
+                        action='store')
     parser.add_argument('-proxy',
                         nargs='?',
                         default=None,
@@ -61,12 +95,28 @@ def config_logging(logs_dir=None):
             '%(asctime)s - %(levelname)s - %(message)s', datefmt="%H:%M:%S"))
         handlers.append(file_handler)
     logging.basicConfig(level=logging.INFO, handlers=handlers)
+
+def main():
     try:
+        args = parse_args()
         config_logging(args.store_logs)
+        logging.info(Info.BANNER)
+        bot = TikTok(
+            out_dir=args.out_dir,
+            mode=args.mode,
+            user=args.user,
+            room_id=args.room_id,
+            use_ffmpeg=args.ffmpeg,
             proxy=args.proxy,
+            duration=args.duration,
             browser_exec=args.browser_exec,
             combine=args.combine
+        )
+        bot.run()
     except Exception as ex:
         logging.error('Exception caught in main:')
         logging.error(f'{ex}\n')
         traceback.print_exc()
+
+if __name__ == '__main__':
+    main()
