@@ -44,6 +44,7 @@ Use the -proxy argument to specify a proxy server. Defaults to tor proxy which r
 
 ## To-Do List
 - [x] Record private live streams with browser extension
+- [x] Handle stream lagging and interruptions
 - [x] Log console output to file
 - [x] Automatic Recording
 - [x] Recording by room_id

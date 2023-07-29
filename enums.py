@@ -1,5 +1,6 @@
 from enum import Enum, IntEnum
 
+    LAGGING   = 1
 
 class TimeOut(IntEnum):
     """ 
@@ -8,9 +9,7 @@ class TimeOut(IntEnum):
     def __mul__(self, operator):
         return self.value * operator
 
-    ONE_MINUTE = 60
-    AUTOMATIC_MODE = 5
-    CONNECTION_CLOSED = 2
+    LAG   = 5
 
 
 class StatusCode(IntEnum):
