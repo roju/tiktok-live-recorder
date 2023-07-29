@@ -21,8 +21,31 @@ import logging.handlers
                         const='./logs',
                         help="Log console output to a file named with today's date in the specified folder",
                         action='store')
+
+    args = parser.parse_args()
+    if not args.user and not args.room_id:
+        raise Exception('Missing user/room_id value')
+    if args.room_id: args.room_id = str(args.room_id)
+    if args.mode != 'manual' and args.mode != 'auto':
+        raise Exception('-mode value must be either "manual" or "auto"')
+    if args.mode == 'manual':
+        args.mode = Mode.MANUAL
+    else: 
+        args.mode = Mode.AUTOMATIC
+        if not args.ffmpeg:
+            raise Exception('To use automatic recording mode, add -ffmpeg flag.')
+    if (args.out_dir != '' and isinstance(args.out_dir, str) 
+            and not (args.out_dir.endswith('/') or args.out_dir.endswith('\\'))):
+        if os.name == 'nt':
+            args.out_dir = args.out_dir + '\\'
+        else:
+            args.out_dir = args.out_dir + '/'
     if args.combine and not args.ffmpeg:
         raise Exception('To use combine function, add -ffmpeg flag.')
+    if args.duration is not None and args.duration < 0:
+        raise Exception('Duration must be a positive number')
+    return args
+
 def config_logging(logs_dir=None):
     """Set up logging handlers"""
     stream_handler = logging.StreamHandler(sys.stdout)
