@@ -60,10 +60,16 @@ from browser import BrowserExtractor
         except Exception as ex: logging.error(ex)
         self.video_list = []
         self.out_file = None
+            json = self.req.get(url, headers=bot_utils.headers).json()
+            # logging.info(f'is_user_live response {json}')
+            if not bot_utils.check_exists(json, ['LiveRoomInfo', 'status']):
+                raise ValueError(f'LiveRoomInfo.status not found in json: {json}')
+            live_status_code = json['LiveRoomInfo']['status']
             if live_status_code != 4: return (LiveStatus.LAGGING 
                 if self.status == LiveStatus.LAGGING else LiveStatus.LIVE)
             if self.status is not LiveStatus.LAGGING:
                 logging.info(f'Getting live url for room ID {self.room_id}')
+            json = self.req.get(url, headers=bot_utils.headers).json()
             if bot_utils.check_exists(json, ['data', 'prompts']):
                 if 'This account is private' in json['data']['prompts']:
                     if not self.browser_exec:
@@ -72,4 +78,13 @@ from browser import BrowserExtractor
                         logging.info('Account is private, login required')
                         browser_extractor = BrowserExtractor(self.room_id, self.browser_exec)
                         return browser_extractor.get_live_url()
+            if not bot_utils.check_exists(json, ['data', 'stream_url', 'rtmp_pull_url']):
+                raise ValueError(f'rtmp_pull_url not in response: {json}')
+            return json['data']['stream_url']['rtmp_pull_url']
         except errors.BrowserExtractor as e: raise e
+            json = req.get(url, headers=bot_utils.headers).json()
+            if not bot_utils.check_exists(json, ['LiveRoomInfo', 'ownerInfo', 'uniqueId']):
+                logging.error(f'LiveRoomInfo.uniqueId not found in json: {json}')
+                raise errors.UserNotFound(ErrorMsg.USERNAME_ERROR)
+            return json['LiveRoomInfo']['ownerInfo']['uniqueId']
+            

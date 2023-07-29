@@ -6,6 +6,24 @@ def lag_error(err_str) -> bool:
         'Error in the pull function'
     ]
     return any(err in err_str for err in lag_errors)
+def check_exists(exp, value):
+    """Check if a nested json key exists"""
+    # For the case that we have an empty element
+    if exp is None:
+        return False
+
+    # Check existence of the first key
+    if value[0] in exp:
+        
+        # if this is the last key in the list, then no need to look further
+        if len(value) == 1:
+            return True
+        else:
+            next_value = value[1:len(value)]
+            return check_exists(exp[value[0]], next_value)
+    else:
+        return False
+
 def get_proxy_session(proxy_url):
     """Request with TOR or other proxy.
     TOR uses 9050 as the default socks port.
