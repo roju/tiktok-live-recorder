@@ -61,7 +61,12 @@ def config_logging(logs_dir=None):
             '%(asctime)s - %(levelname)s - %(message)s', datefmt="%H:%M:%S"))
         handlers.append(file_handler)
     logging.basicConfig(level=logging.INFO, handlers=handlers)
+    try:
         config_logging(args.store_logs)
             proxy=args.proxy,
             browser_exec=args.browser_exec,
             combine=args.combine
+    except Exception as ex:
+        logging.error('Exception caught in main:')
+        logging.error(f'{ex}\n')
+        traceback.print_exc()
