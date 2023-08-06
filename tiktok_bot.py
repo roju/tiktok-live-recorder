@@ -31,14 +31,6 @@ class TikTok:
         self.out_file = None
         self.video_list = []
 
-    """
- ██████  ██    ██ ███    ██ 
- ██   ██ ██    ██ ████   ██ 
- ██████  ██    ██ ██ ██  ██ 
- ██   ██ ██    ██ ██  ██ ██ 
- ██   ██  ██████  ██   ████ 
-    """
-
     def run(self):
         """Runs the program in the selected mode. 
         
@@ -95,14 +87,6 @@ class TikTok:
             except KeyboardInterrupt:
                 logging.info('Stopped by keyboard interrupt\n')
                 sys.exit(0)
-
-    """
- ███████ ████████  █████  ██████  ████████     ██████  ███████  ██████ 
- ██         ██    ██   ██ ██   ██    ██        ██   ██ ██      ██      
- ███████    ██    ███████ ██████     ██        ██████  █████   ██      
-      ██    ██    ██   ██ ██   ██    ██        ██   ██ ██      ██      
- ███████    ██    ██   ██ ██   ██    ██        ██   ██ ███████  ██████ 
-    """
 
     def start_recording(self, live_url):
         """Start recording live"""
@@ -163,14 +147,6 @@ class TikTok:
             self.finish_recording()
             sys.exit(0)
 
-    """
- ██   ██  █████  ███    ██ ██████  ██      ███████     ██████  ███████  ██████ 
- ██   ██ ██   ██ ████   ██ ██   ██ ██      ██          ██   ██ ██      ██      
- ███████ ███████ ██ ██  ██ ██   ██ ██      █████       ██████  █████   ██      
- ██   ██ ██   ██ ██  ██ ██ ██   ██ ██      ██          ██   ██ ██      ██      
- ██   ██ ██   ██ ██   ████ ██████  ███████ ███████     ██   ██ ███████  ██████ 
-    """
-
     def handle_recording_ffmpeg(self, live_url):
         """Show real-time stats and raise ffmpeg errors"""
         stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, stats=None)
@@ -204,14 +180,6 @@ class TikTok:
         finally: 
             if stats_shown: print()
 
-    """
- ███████ ██ ███    ██ ██ ███████ ██   ██     ██████  ███████  ██████ 
- ██      ██ ████   ██ ██ ██      ██   ██     ██   ██ ██      ██      
- █████   ██ ██ ██  ██ ██ ███████ ███████     ██████  █████   ██      
- ██      ██ ██  ██ ██ ██      ██ ██   ██     ██   ██ ██      ██      
- ██      ██ ██   ████ ██ ███████ ██   ██     ██   ██ ███████  ██████ 
-    """
-
     def finish_recording(self):
         """Combine multiple videos into one if needed"""
         try:
@@ -232,15 +200,6 @@ class TikTok:
         self.video_list = []
         self.out_file = None
 
-
-    """
- ██ ███████     ██    ██ ███████ ███████ ██████      ██      ██ ██    ██ ███████ 
- ██ ██          ██    ██ ██      ██      ██   ██     ██      ██ ██    ██ ██      
- ██ ███████     ██    ██ ███████ █████   ██████      ██      ██ ██    ██ █████   
- ██      ██     ██    ██      ██ ██      ██   ██     ██      ██  ██  ██  ██      
- ██ ███████      ██████  ███████ ███████ ██   ██     ███████ ██   ████   ███████ 
-    """
-
     def is_user_live(self) -> LiveStatus:
         """Check whether the user is live"""
         try:
@@ -259,15 +218,6 @@ class TikTok:
         except ValueError as e: raise e
         except Exception as ex:
             raise errors.GenericReq(ex)
-
-
-    """
-  ██████  ███████ ████████     ██      ██ ██    ██ ███████     ██    ██ ██████  ██      
- ██       ██         ██        ██      ██ ██    ██ ██          ██    ██ ██   ██ ██      
- ██   ███ █████      ██        ██      ██ ██    ██ █████       ██    ██ ██████  ██      
- ██    ██ ██         ██        ██      ██  ██  ██  ██          ██    ██ ██   ██ ██      
-  ██████  ███████    ██        ███████ ██   ████   ███████      ██████  ██   ██ ███████ 
-    """
 
     def get_live_url(self) -> str:
         """Get the cdn (flv or m3u8) of the stream"""
@@ -293,15 +243,6 @@ class TikTok:
         except Exception as ex:
             raise errors.GenericReq(ex)
 
-
-    """
-  ██████  ███████ ████████     ██████   ██████   ██████  ███    ███     ██ ██████  
- ██       ██         ██        ██   ██ ██    ██ ██    ██ ████  ████     ██ ██   ██ 
- ██   ███ █████      ██        ██████  ██    ██ ██    ██ ██ ████ ██     ██ ██   ██ 
- ██    ██ ██         ██        ██   ██ ██    ██ ██    ██ ██  ██  ██     ██ ██   ██ 
-  ██████  ███████    ██        ██   ██  ██████   ██████  ██      ██     ██ ██████  
-    """
-
     def get_room_id_from_user(self) -> str:
         """Given a username, get the room_id"""
         try:
@@ -322,14 +263,6 @@ class TikTok:
         except ValueError as e: raise e
         except Exception as ex:
             raise errors.GenericReq(ex)
-
-    """
-  ██████  ███████ ████████     ██    ██ ███████ ███████ ██████  
- ██       ██         ██        ██    ██ ██      ██      ██   ██ 
- ██   ███ █████      ██        ██    ██ ███████ █████   ██████  
- ██    ██ ██         ██        ██    ██      ██ ██      ██   ██ 
-  ██████  ███████    ██         ██████  ███████ ███████ ██   ██ 
-    """
 
     def get_user_from_room_id(self) -> str:
         """Given a room_id, get the username"""
