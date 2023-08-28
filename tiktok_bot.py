@@ -187,12 +187,12 @@ class TikTok:
                 current_date = time.strftime('%Y.%m.%d_%H-%M-%S', time.localtime())
                 self.out_file = f'{self.out_dir}TK_{self.user}_{current_date}_concat.mp4'
                 logging.info(f'Concatenating {len(self.video_list)} video files')
-                with open(f'{self.out_dir}concat.txt', 'w') as file:
+                with open('concat.txt', 'w') as file:
                     for v in self.video_list: file.write(f"file '{v}'\n")
-                (ffmpeg.input(f'{self.out_dir}concat.txt', **{'f': 'concat'}, **{'safe': 0})
+                (ffmpeg.input('concat.txt', **{'f': 'concat'}, **{'safe': 0})
                 .output(self.out_file, c='copy')
                 .run(quiet=True))
-                os.remove(f'{self.out_dir}concat.txt')
+                os.remove('concat.txt')
                 for v in self.video_list: os.remove(v)
             if os.path.isfile(self.out_file):
                 logging.info(f'Recording finished: {self.out_file}\n')
