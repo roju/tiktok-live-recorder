@@ -50,5 +50,5 @@ class Info(Enum):
     def __str__(self):
         return str(self.value)
 
-    VERSION = 4.0
+    VERSION = 4.1
     BANNER = f'Tiktok Live Recorder v{VERSION}'
