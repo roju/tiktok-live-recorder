@@ -137,3 +137,6 @@ logs/
 
 # user scripts
 *.sh
+
+# mac finder
+*.DS_Store
