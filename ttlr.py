@@ -1,8 +1,6 @@
 import argparse
 import logging
-import logging.handlers
-import datetime
-import sys
+import log_utils
 import os
 import traceback
 from enums import Mode, Info
@@ -80,26 +78,10 @@ def parse_args():
         raise Exception('Duration must be a positive number')
     return args
 
-def config_logging(logs_dir=None):
-    """Set up logging handlers"""
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(
-        logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    handlers=[stream_handler]
-    if logs_dir:
-        os.makedirs(logs_dir, exist_ok=True)
-        log_file = os.path.join(logs_dir, f'{datetime.date.today()}.log')
-        file_handler = logging.handlers.TimedRotatingFileHandler(
-            filename=log_file, when="midnight")
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s - %(levelname)s - %(message)s', datefmt="%H:%M:%S"))
-        handlers.append(file_handler)
-    logging.basicConfig(level=logging.INFO, handlers=handlers)
-
 def main():
     try:
         args = parse_args()
-        config_logging(args.store_logs)
+        log_utils.config_logging(args.user, args.room_id, args.store_logs)
         logging.info(Info.BANNER)
         bot = TikTok(
             out_dir=args.out_dir,
