@@ -135,8 +135,5 @@ dmypy.json
 # logs folder
 logs/
 
-# user scripts
-*.sh
-
 # mac finder
 *.DS_Store
