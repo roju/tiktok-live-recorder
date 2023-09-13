@@ -150,6 +150,7 @@ class TikTok:
     def handle_recording_ffmpeg(self, live_url):
         """Show real-time stats and raise ffmpeg errors"""
         stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, stats=None)
+        stats_shown = False
         if self.duration is not None:
             stream = ffmpeg.output(stream, self.out_file, c='copy', t=self.duration)
         else:
@@ -157,7 +158,6 @@ class TikTok:
         try:
             proc = ffmpeg.run_async(stream, pipe_stderr=True)
             ffmpeg_err = ''
-            stats_shown = False
             text_stream = io.TextIOWrapper(proc.stderr, encoding="utf-8")
             while True:
                 if proc.poll() is not None: break
