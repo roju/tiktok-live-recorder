@@ -149,7 +149,9 @@ class TikTok:
 
     def handle_recording_ffmpeg(self, live_url):
         """Show real-time stats and raise ffmpeg errors"""
-        stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, stats=None)
+        stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, **{'reconnect': 1}, 
+                              **{'reconnect_streamed': 1}, **{'reconnect_at_eof': 1},
+                              **{'reconnect_delay_max': 5}, stats=None)
         stats_shown = False
         if self.duration is not None:
             stream = ffmpeg.output(stream, self.out_file, c='copy', t=self.duration)
