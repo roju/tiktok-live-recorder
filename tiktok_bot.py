@@ -187,19 +187,31 @@ class TikTok:
     def finish_recording(self):
         """Combine multiple videos into one if needed"""
         try:
+            current_date = time.strftime('%Y.%m.%d_%H-%M-%S', time.localtime())
+            ffmpeg_concat_list = f'{self.user}_{current_date}_concat_list.txt'
             if self.combine and len(self.video_list) > 1:
-                current_date = time.strftime('%Y.%m.%d_%H-%M-%S', time.localtime())
-                self.out_file = f'{self.out_dir}TK_{self.user}_{current_date}_concat.mp4'
+                self.out_file = f'{self.out_dir}{self.user}_{current_date}_concat.mp4'
                 logging.info(f'Concatenating {len(self.video_list)} video files')
-                with open('concat.txt', 'w') as file:
+                with open(ffmpeg_concat_list, 'w') as file:
                     for v in self.video_list: file.write(f"file '{v}'\n")
-                (ffmpeg.input('concat.txt', **{'f': 'concat'}, **{'safe': 0})
-                .output(self.out_file, c='copy')
-                .run(quiet=True))
-                os.remove('concat.txt')
-                for v in self.video_list: os.remove(v)
+                stream = ffmpeg.input(ffmpeg_concat_list, **{'f': 'concat'}, **{'safe': 0}, **{'loglevel': 'error'})
+                stream = ffmpeg.output(stream, self.out_file, c='copy')
+                proc = ffmpeg.run_async(stream, pipe_stderr=True)
+                text_stream = io.TextIOWrapper(proc.stderr, encoding="utf-8")
+                ffmpeg_err = ''
+                while True:
+                    if proc.poll() is not None: break
+                    for line in text_stream: ffmpeg_err = ffmpeg_err + ''.join(line)
+                if ffmpeg_err:
+                    raise errors.FFmpeg(ffmpeg_err.strip())
+                logging.info(f'Concat finished')
             if os.path.isfile(self.out_file):
                 logging.info(f'Recording finished: {self.out_file}\n')
+            if os.path.isfile(ffmpeg_concat_list):
+                os.remove(ffmpeg_concat_list)
+        except errors.FFmpeg as e: 
+            logging.error('FFmpeg concat error:')
+            logging.error(e)
         except Exception as ex: logging.error(ex)
         self.video_list = []
         self.out_file = None
