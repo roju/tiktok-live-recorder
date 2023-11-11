@@ -8,6 +8,7 @@ import logging
 import bot_utils
 import errors
 import io
+import shutil
 from enums import Mode, ErrorMsg, StatusCode, WaitTime, LiveStatus
 from browser import BrowserExtractor
 
@@ -205,6 +206,10 @@ class TikTok:
                 if ffmpeg_err:
                     raise errors.FFmpeg(ffmpeg_err.strip())
                 logging.info(f'Concat finished')
+                videos_dir = os.path.join(self.out_dir, f'{self.user}_{current_date}_segments', '')
+                os.makedirs(videos_dir)
+                for v in self.video_list: shutil.move(v, videos_dir)
+                logging.info(f'Moved recorded segments to directory: {videos_dir}')
             if os.path.isfile(self.out_file):
                 logging.info(f'Recording finished: {self.out_file}\n')
             if os.path.isfile(ffmpeg_concat_list):
