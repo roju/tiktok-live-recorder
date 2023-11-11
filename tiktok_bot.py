@@ -160,27 +160,29 @@ class TikTok:
         try:
             proc = ffmpeg.run_async(stream, pipe_stderr=True)
             ffmpeg_err = ''
+            last_stats = ''
             text_stream = io.TextIOWrapper(proc.stderr, encoding="utf-8")
             while True:
                 if proc.poll() is not None: break
                 for line in text_stream:
+                    line = line.strip()
                     if 'frame=' in line:
+                        last_stats = line
                         if not stats_shown:
                             logging.info(f"Started recording{f' for {self.duration} seconds' if self.duration else ''}")
                             print("Press 'q' to re-start recording, CTRL + C to stop")
                             self.status = LiveStatus.LIVE
-                        print(line.strip(), end='\r')
+                        print(last_stats, end='\r')
                         stats_shown = True
                     else:
-                        # logging.error(line.strip())
                         ffmpeg_err = ffmpeg_err + ''.join(line)
             if ffmpeg_err: 
                 if bot_utils.lag_error(ffmpeg_err): raise errors.StreamLagging
                 else: raise errors.FFmpeg(ffmpeg_err.strip())
         except KeyboardInterrupt as i: raise i
         except ValueError as e: logging.error(e)
-        finally: 
-            if stats_shown: print()
+        finally:
+            if stats_shown: logging.info(last_stats)
 
     def finish_recording(self):
         """Combine multiple videos into one if needed"""
