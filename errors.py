@@ -1,6 +1,7 @@
 class ConnectionClosed(Exception): pass
 class UserNotFound(Exception): pass
-class AccountPrivate(Exception): pass
+class LoginRequired(Exception): pass
+class AgeRestricted(Exception): pass
 class Blacklisted(Exception): pass
 class Recording(Exception): pass
 class BrowserExtractor(Exception): pass

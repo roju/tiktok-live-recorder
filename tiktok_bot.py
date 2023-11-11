@@ -247,13 +247,19 @@ class TikTok:
                 logging.info(f'Getting live url for room ID {self.room_id}')
             url = f'https://webcast.tiktok.com/webcast/room/info/?aid=1988&room_id={self.room_id}'
             json = self.req.get(url, headers=bot_utils.headers).json()
+            if bot_utils.login_required(json):
+                if not self.browser_exec:
+                    raise errors.LoginRequired('Login required')
+                else:
+                    logging.info('Login required')
                     browser_extractor = BrowserExtractor()
                     return browser_extractor.get_live_url(self.room_id, self.browser_exec)
             if not bot_utils.check_exists(json, ['data', 'stream_url', 'rtmp_pull_url']):
                 raise ValueError(f'rtmp_pull_url not in response: {json}')
             return json['data']['stream_url']['rtmp_pull_url']
         except ValueError as e: raise e
-        except errors.AccountPrivate as e: raise e
+        except errors.LoginRequired as e: raise e
+        except errors.AgeRestricted as e: raise e
         except errors.BrowserExtractor as e: raise e
         except Exception as ex:
             raise errors.GenericReq(ex)

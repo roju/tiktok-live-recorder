@@ -1,6 +1,7 @@
 import time
 import logging
 import requests as req
+import errors
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -60,3 +61,15 @@ def get_proxy_session(proxy_url):
     except Exception as ex:
         logging.error(ex)
         return req
+
+def login_required(json) -> bool:
+    # logging.info(json)
+    if (check_exists(json, ['data', 'prompts'])
+            and 'This account is private' in json['data']['prompts']):
+        logging.info('Account is private')
+        return True
+    elif (check_exists(json, ['status_code'])
+            and json['status_code'] == 4003110):
+        raise errors.AgeRestricted('Account is age restricted')
+    else:
+        return False
