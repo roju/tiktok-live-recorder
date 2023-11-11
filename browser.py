@@ -30,7 +30,7 @@ class BrowserExtractor:
         finally:
             if server.is_alive(): server.stop()
         return self.live_url
-    
+
     def browser_open(self, room_id, browser_exec):
         """Open the room info page in the browser"""
         room_info_url = f'https://webcast.tiktok.com/webcast/room/info/?aid=1988&room_id={room_id}'
@@ -39,7 +39,7 @@ class BrowserExtractor:
             time.sleep(0.1)
         logging.info('browser opened')
 
-    
+
     def create_handler(browser_extractor):
         """Wait for the helper extension to extract and send us the live_url"""
         class ExtractorHandler(BaseHTTPRequestHandler):
@@ -55,7 +55,7 @@ class BrowserExtractor:
                         self.send_header('Content-type', 'text/html')
                         self.end_headers()
                         browser_extractor.live_url = data['live_url']
-                    else: 
+                    else:
                         raise ValueError('live_url not in json')
                 except Exception as ex:
                     logging.error(ex)

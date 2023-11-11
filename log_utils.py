@@ -12,12 +12,12 @@ class CustomTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
   def doRollover(self):
     """
     TimedRotatingFileHandler remix - rotates logs on daily basis, and filename of current logfile is time.strftime("%Y-%m-%d")+".log"
-    """ 
+    """
     self.stream.close()
     self.baseFilename = self.logs_dir+time.strftime('%Y-%m-%d')+'.log'
     self.stream = open(self.baseFilename, 'w')
     self.rolloverAt = self.rolloverAt + self.interval
-    
+
 def config_logging(username, room_id, logs_dir=None):
     """Set up logging handlers"""
     stream_handler = logging.StreamHandler(sys.stdout)
@@ -25,7 +25,7 @@ def config_logging(username, room_id, logs_dir=None):
         logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
     handlers=[stream_handler]
     if logs_dir:
-        if username: subfolder = username 
+        if username: subfolder = username
         else: subfolder = room_id
         logs_dir = os.path.join(logs_dir, subfolder, '')
         os.makedirs(logs_dir, exist_ok=True)

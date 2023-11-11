@@ -31,10 +31,8 @@ def check_exists(exp, value):
     # For the case that we have an empty element
     if exp is None:
         return False
-
     # Check existence of the first key
     if value[0] in exp:
-        
         # if this is the last key in the list, then no need to look further
         if len(value) == 1:
             return True

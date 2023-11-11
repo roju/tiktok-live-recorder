@@ -15,7 +15,7 @@ from browser import BrowserExtractor
 
 class TikTok:
 
-    def __init__(self, out_dir, mode=Mode.MANUAL, user=None, room_id=None, 
+    def __init__(self, out_dir, mode=Mode.MANUAL, user=None, room_id=None,
                  use_ffmpeg=None, proxy=None, duration=None, browser_exec=None,
                  combine=None):
         self.out_dir = out_dir
@@ -33,13 +33,12 @@ class TikTok:
         self.video_list = []
 
     def run(self):
-        """Runs the program in the selected mode. 
-        
-        If the mode is MANUAL, it checks if the user is currently live and if so, starts recording. 
+        """Runs the program in the selected mode.
+
+        If the mode is MANUAL, it checks if the user is currently live and if so, starts recording.
         If the mode is AUTOMATIC, it continuously checks if the user is live and if not, waits for the specified timeout before rechecking.
         If the user is live, it starts recording.
         """
-
         while True:
             try:
                 if self.status == LiveStatus.LAGGING:
@@ -71,11 +70,11 @@ class TikTok:
                     logging.info(f'Live URL: {live_url}')
                     self.start_recording(live_url)
 
-            except (errors.GenericReq, ValueError, req.HTTPError, 
-                    errors.BrowserExtractor, errors.ConnectionClosed, 
+            except (errors.GenericReq, ValueError, req.HTTPError,
+                    errors.BrowserExtractor, errors.ConnectionClosed,
                     errors.UserNotFound) as e:
                 if self.mode == Mode.MANUAL: raise e
-                else: 
+                else:
                     logging.error(e)
                     self.room_id = None
                     bot_utils.retry_wait(WaitTime.SHORT)
@@ -150,7 +149,7 @@ class TikTok:
 
     def handle_recording_ffmpeg(self, live_url):
         """Show real-time stats and raise ffmpeg errors"""
-        stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, **{'reconnect': 1}, 
+        stream = ffmpeg.input(live_url, **{'loglevel': 'error'}, **{'reconnect': 1},
                               **{'reconnect_streamed': 1}, **{'reconnect_at_eof': 1},
                               **{'reconnect_delay_max': 5}, **{'timeout': 10000000}, stats=None)
         stats_shown = False
@@ -177,7 +176,7 @@ class TikTok:
                         stats_shown = True
                     else:
                         ffmpeg_err = ffmpeg_err + ''.join(line)
-            if ffmpeg_err: 
+            if ffmpeg_err:
                 if bot_utils.lag_error(ffmpeg_err): raise errors.StreamLagging
                 else: raise errors.FFmpeg(ffmpeg_err.strip())
         except KeyboardInterrupt as i: raise i
@@ -214,7 +213,7 @@ class TikTok:
                 logging.info(f'Recording finished: {self.out_file}\n')
             if os.path.isfile(ffmpeg_concat_list):
                 os.remove(ffmpeg_concat_list)
-        except errors.FFmpeg as e: 
+        except errors.FFmpeg as e:
             logging.error('FFmpeg concat error:')
             logging.error(e)
         except Exception as ex: logging.error(ex)
@@ -230,10 +229,10 @@ class TikTok:
             if not bot_utils.check_exists(json, ['LiveRoomInfo', 'status']):
                 raise ValueError(f'LiveRoomInfo.status not found in json: {json}')
             live_status_code = json['LiveRoomInfo']['status']
-            if live_status_code != 4: return (LiveStatus.LAGGING 
+            if live_status_code != 4: return (LiveStatus.LAGGING
                 if self.status == LiveStatus.LAGGING else LiveStatus.LIVE)
             else: return LiveStatus.OFFLINE
-            
+
         except ConnectionAbortedError:
             raise errors.ConnectionClosed(ErrorMsg.CONNECTION_CLOSED)
         except ValueError as e: raise e
@@ -268,7 +267,7 @@ class TikTok:
         """Given a username, get the room_id"""
         try:
             response = self.req.get(
-                f'https://www.tiktok.com/@{self.user}/live', 
+                f'https://www.tiktok.com/@{self.user}/live',
                 allow_redirects=False, headers=bot_utils.headers)
             # logging.info(f'get_room_id_from_user response: {response.text}')
             if response.status_code == StatusCode.REDIRECT:
@@ -276,7 +275,7 @@ class TikTok:
             match = re.search(r'room_id=(\d+)', response.text)
             if not match: raise ValueError('room_id not found')
             return match.group(1)
-        
+
         except (req.HTTPError, errors.Blacklisted) as e:
             raise errors.Blacklisted(e)
         except AttributeError as e:
@@ -294,7 +293,7 @@ class TikTok:
                 logging.error(f'LiveRoomInfo.uniqueId not found in json: {json}')
                 raise errors.UserNotFound(ErrorMsg.USERNAME_ERROR)
             return json['LiveRoomInfo']['ownerInfo']['uniqueId']
-            
+
         except ConnectionAbortedError:
             raise errors.ConnectionClosed(ErrorMsg.CONNECTION_CLOSED)
         except errors.UserNotFound as e: raise e

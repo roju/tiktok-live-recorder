@@ -62,11 +62,11 @@ def parse_args():
         raise Exception('-mode value must be either "manual" or "auto"')
     if args.mode == 'manual':
         args.mode = Mode.MANUAL
-    else: 
+    else:
         args.mode = Mode.AUTOMATIC
         if not args.ffmpeg:
             raise Exception('To use automatic recording mode, add -ffmpeg flag.')
-    if (args.out_dir != '' and isinstance(args.out_dir, str) 
+    if (args.out_dir != '' and isinstance(args.out_dir, str)
             and not (args.out_dir.endswith('/') or args.out_dir.endswith('\\'))):
         if os.name == 'nt':
             args.out_dir = args.out_dir + '\\'
