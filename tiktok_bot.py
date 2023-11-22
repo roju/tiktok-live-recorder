@@ -93,7 +93,7 @@ class TikTok:
         should_exit = False
         current_date = time.strftime('%Y.%m.%d_%H-%M-%S', time.localtime())
         suffix = '' if self.use_ffmpeg else '_flv'
-        self.out_file = f'{self.out_dir}TK_{self.user}_{current_date}{suffix}.mp4'
+        self.out_file = f'{self.out_dir}{self.user}_{current_date}{suffix}.mp4'
         if self.status is not LiveStatus.LAGGING:
             logging.info(f"Output directory: {self.out_dir}")
         try:
