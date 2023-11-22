@@ -17,7 +17,7 @@ class TikTok:
 
     def __init__(self, out_dir, mode=Mode.MANUAL, user=None, room_id=None,
                  use_ffmpeg=None, proxy=None, duration=None, browser_exec=None,
-                 combine=None):
+                 combine=None, delete_segments=None):
         self.out_dir = out_dir
         self.mode = mode
         self.user = user
@@ -26,6 +26,7 @@ class TikTok:
         self.duration = duration
         self.browser_exec = browser_exec
         self.combine = combine
+        self.delete_segments = delete_segments
         if proxy: self.req = bot_utils.get_proxy_session(proxy)
         else: self.req = req
         self.status = LiveStatus.BOT_INIT
@@ -205,10 +206,14 @@ class TikTok:
                 if ffmpeg_err:
                     raise errors.FFmpeg(ffmpeg_err.strip())
                 logging.info(f'Concat finished')
-                videos_dir = os.path.join(self.out_dir, f'{self.user}_{current_date}_segments', '')
-                os.makedirs(videos_dir)
-                for v in self.video_list: shutil.move(v, videos_dir)
-                logging.info(f'Moved recorded segments to directory: {videos_dir}')
+                if self.delete_segments:
+                    for v in self.video_list: os.remove(v)
+                    logging.info(f'Deleted {len(self.video_list)} video files')
+                else:
+                    videos_dir = os.path.join(self.out_dir, f'{self.user}_{current_date}_segments', '')
+                    os.makedirs(videos_dir)
+                    for v in self.video_list: shutil.move(v, videos_dir)
+                    logging.info(f'Moved recorded segments to directory: {videos_dir}')
             if os.path.isfile(self.out_file):
                 logging.info(f'Recording finished: {self.out_file}\n')
             if os.path.isfile(ffmpeg_concat_list):

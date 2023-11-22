@@ -45,7 +45,10 @@ def parse_args():
                         help='Path to browser executable for recording private streams',
                         action='store')
     parser.add_argument('-combine',
-                        help='When recording ends, concatenate all video files into a single file. Requires ffmpeg.',
+                        help='When recording ends, concatenate all video files into a single file. Requires ffmpeg',
+                        action='store_true')
+    parser.add_argument('-delete_segments',
+                        help='Delete redundant video segment files after successful concat. Requires -combine option',
                         action='store_true')
     parser.add_argument('-store_logs',
                         nargs='?',
@@ -74,6 +77,8 @@ def parse_args():
             args.out_dir = args.out_dir + '/'
     if args.combine and not args.ffmpeg:
         raise Exception('To use combine function, add -ffmpeg flag.')
+    if args.delete_segments and not args.combine:
+        raise Exception('To use delete_segments function, add -combine flag.')
     if args.duration is not None and args.duration < 0:
         raise Exception('Duration must be a positive number')
     return args
@@ -92,7 +97,8 @@ def main():
             proxy=args.proxy,
             duration=args.duration,
             browser_exec=args.browser_exec,
-            combine=args.combine
+            combine=args.combine,
+            delete_segments=args.delete_segments
         )
         bot.run()
     except Exception as ex:
