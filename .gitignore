@@ -140,3 +140,6 @@ logs/
 
 # mac finder
 *.DS_Store
+
+# folder for local testing
+test/
