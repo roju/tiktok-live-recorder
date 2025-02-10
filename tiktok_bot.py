@@ -277,8 +277,8 @@ class TikTok:
             # logging.info(f'get_room_id_from_user response: {response.text}')
             if response.status_code == StatusCode.REDIRECT:
                 raise errors.Blacklisted('Redirect')
-            match = re.search(r'room_id=(\d+)', response.text)
-            if not match: raise ValueError('room_id not found')
+            match = re.search(r'"roomId":"(\d+)"', response.text)
+            if not match: raise ValueError('roomId not found')
             return match.group(1)
 
         except (req.HTTPError, errors.Blacklisted) as e:
